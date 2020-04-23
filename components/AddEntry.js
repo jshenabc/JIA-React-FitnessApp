@@ -81,19 +81,23 @@ export default class AddEntry extends Component {
         {Object.keys(metaInfo).map((key) => {
           const { getIcon, type, ...rest} = metaInfo[key]
           const value = this.state[key]
+          //console.log({value})
           return (
             <View key={key}>
               {getIcon()}
               {type === 'slider'
-                ? <UdaciSlider value={value} onChange={() => this.slider(key,value)}/>
+                ? <UdaciSlider value={value} onChange={(value) => this.slide(key,value)}
+                    {...rest}
+                  />
                 : <UdaciSteppers value={value}
                                  onIncrement={() => this.increment(key)}
-                                 onDecrement={() => this.decrement(key)}/>
-              }
+                                 onDecrement={() => this.decrement(key)}
+                                 {...rest}
+                  />}
             </View>
           )
-
         })}
+
         <SubmitBtn onPress={this.submit} />
         <Text>{JSON.stringify(this.state)}</Text>
       </View>
