@@ -4,6 +4,9 @@ import { getMetricMetaInfo, timeToString } from "../utils/helpers";
 import UdaciSlider from './UdaciSlider'
 import UdaciSteppers from './UdaciSteppers'
 import DateHeader from './DateHeader'
+import { Ionicons } from "@expo/vector-icons";
+import TextButton from "./TextButton";
+import { submitEntry, removeEntry } from '../utils/api'
 
 function SubmitBtn ({ onPress }) {
   return (
@@ -69,12 +72,33 @@ export default class AddEntry extends Component {
     //Nevigate to Home
 
     //Save to DATABASE
-
+    submitEntry({key,entry})
     //Clean local notification
+  }
+
+  reset =() => {
+    const key = timeToString()
+
+    //update Redux
+
+    //route to homme
+    removeEntry(key)
+    //update db
   }
   render() {
     const metaInfo = getMetricMetaInfo()
     // return <View>{getMetricMetaInfo("bike").getIcon()}</View>;
+
+    if(this.props.alreadyLogged) {
+      return (
+        <View>
+          <Ionicons name='ios-happy' size={100} />
+          <Text>You already logged your information for today.</Text>
+          <TextButton onPress={this.reset}>Reset</TextButton>
+        </View>
+      )
+    }
+
     return (
       <View>
          <DateHeader date={(new Date()).toLocaleDateString()}/>
