@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react'
-import { View, Platform } from 'react-native';
+import { View, Platform, StatusBar } from 'react-native';
 import AddEntry from './components/AddEntry'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
@@ -11,7 +11,19 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Constants from "expo-constants";
+import EntryDetail from './components/EntryDetail';
+import { createStackNavigator } from '@react-navigation/stack';
 
+function UdaciStatusBar ({backgroundColor, ...props}) {
+  return (
+    <View style={{ backgroundColor, height: Constants.statusBarHeight }}>
+      <StatusBar translucent backgroundColor={backgroundColor} {...props} />
+    </View>
+  )
+}
+
+// Config for TabNav
 const RouteConfigs = {
   History:{
     name: "History",
@@ -50,16 +62,49 @@ const TabNavigatorConfig = {
           ? createBottomTabNavigator()
           : createMaterialTopTabNavigator()
 
+  const TabNav = () =>(
+    <Tab.Navigator {...TabNavigatorConfig}>
+        <Tab.Screen {...RouteConfigs['History']} />
+        <Tab.Screen {...RouteConfigs['AddEntry']} />
+    </Tab.Navigator>
+  )
+// Config for StackNav
+const StackNavigatorConfig = {
+  headerMode: "screen"
+}
+const StackConfig = {
+  TabNav:{
+    name: "Home",
+    component: TabNav,
+    options: {headerShown: false}
+  },
+  EntryDetail:{
+    name: "EntryDetail",
+    component: EntryDetail,
+    options: {
+      headerTintColor: white,
+      headerStyle:{
+        backgroundColor: purple
+      },
+      title: "Entry Detail"
+    }
+  }
+}
+const Stack = createStackNavigator();
+const MainNav = () =>(
+  <Stack.Navigator {...StackNavigatorConfig}>
+    <Stack.Screen {...StackConfig['TabNav']} />
+    <Stack.Screen {...StackConfig['EntryDetail']} />
+  </Stack.Navigator>
+)
 export default class App extends React.Component {
 render() {
     const store = createStore(reducer)
     return (
       <Provider store={store}>
-        <NavigationContainer>
-           <Tab.Navigator {...TabNavigatorConfig}>
-               <Tab.Screen {...RouteConfigs['History']} />
-               <Tab.Screen {...RouteConfigs['AddEntry']} />
-           </Tab.Navigator>
+        <UdaciStatusBar backgroundColor={purple} barStyle="light-content" />
+        <NavigationContainer >
+          <MainNav />
         </NavigationContainer>
       </Provider>
     )
