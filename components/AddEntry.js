@@ -10,6 +10,7 @@ import { submitEntry, removeEntry } from '../utils/api'
 import { connect } from 'react-redux'
 import { addEntry } from '../actions'
 import { purple, white } from "../utils/colors";
+import {CommonActions} from '@react-navigation/native';
 
 function SubmitBtn ({ onPress }) {
   return (
@@ -78,7 +79,7 @@ class AddEntry extends Component {
       [key]:entry
     }))
     //Nevigate to Home
-
+    this.toHome();
     //Save to DATABASE
     submitEntry({key,entry})
     //Clean local notification
@@ -92,9 +93,18 @@ class AddEntry extends Component {
       [key]:getDailyReminderValue()
     }))
     //route to homme
-    removeEntry(key)
+    this.toHome();
     //update db
+    removeEntry(key)
   }
+
+  toHome = () => {
+    this.props.navigation.dispatch(
+        CommonActions.goBack({
+            key: 'AddEntry',
+        }))
+  }
+
   render() {
     const metaInfo = getMetricMetaInfo()
     // return <View>{getMetricMetaInfo("bike").getIcon()}</View>;
